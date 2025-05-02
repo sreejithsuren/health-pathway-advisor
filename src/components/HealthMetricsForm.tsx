@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Weight, Height } from 'lucide-react';
+import { Weight, RulerIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface HealthMetricsFormProps {
@@ -69,7 +69,7 @@ const HealthMetricsForm = ({ onSubmit }: HealthMetricsFormProps) => {
             
             <div className="space-y-2">
               <Label htmlFor="height" className="flex items-center gap-2">
-                <Height className="h-4 w-4" />
+                <RulerIcon className="h-4 w-4" />
                 Height (cm)
               </Label>
               <Input
