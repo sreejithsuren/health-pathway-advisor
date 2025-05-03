@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Weight, RulerIcon } from 'lucide-react';
+import { Weight, RulerIcon, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface HealthMetricsFormProps {
@@ -21,6 +21,8 @@ const HealthMetricsForm = ({ onSubmit }: HealthMetricsFormProps) => {
     gender: 'male',
     activityLevel: 'moderate'
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const webhookUrl = "https://datamusings.app.n8n.cloud/webhook-test/8ba1fc70-528a-4724-b469-75110c62882d";
 
   const handleChange = (field: keyof HealthMetrics, value: any) => {
     setMetrics(prev => ({
@@ -29,7 +31,7 @@ const HealthMetricsForm = ({ onSubmit }: HealthMetricsFormProps) => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (metrics.weight <= 0 || metrics.height <= 0 || metrics.age <= 0) {
@@ -37,8 +39,34 @@ const HealthMetricsForm = ({ onSubmit }: HealthMetricsFormProps) => {
       return;
     }
     
-    onSubmit(metrics);
-    toast.success('Health metrics updated!');
+    setIsSubmitting(true);
+    
+    try {
+      // Send data to webhook
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(metrics),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to send data to webhook');
+      }
+      
+      console.log('Data successfully sent to webhook');
+      toast.success('Data sent to webhook successfully!');
+      
+      // Call the original onSubmit handler
+      onSubmit(metrics);
+      toast.success('Health metrics updated!');
+    } catch (error) {
+      console.error('Error sending data to webhook:', error);
+      toast.error('Failed to send data to webhook');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -136,8 +164,16 @@ const HealthMetricsForm = ({ onSubmit }: HealthMetricsFormProps) => {
           <Button 
             type="submit" 
             className="w-full bg-health-primary hover:bg-health-secondary"
+            disabled={isSubmitting}
           >
-            Calculate My Health Plan
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" /> 
+                Sending...
+              </>
+            ) : (
+              'Calculate My Health Plan'
+            )}
           </Button>
         </form>
       </CardContent>
