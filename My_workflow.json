@@ -1,0 +1,159 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "8ba1fc70-528a-4724-b469-75110c62882d",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "381118fc-ecfc-41ff-b32d-66b1f57f2909",
+      "name": "Webhook",
+      "webhookId": "8ba1fc70-528a-4724-b469-75110c62882d"
+    },
+    {
+      "parameters": {
+        "promptType": "={{ `The user is ${$json.body.age|| 'unknown'} years old, weighs ${$json.body.weight|| 'unknown'} kg, is ${$json.body.height|| 'unknown'} cm tall, gender is ${$json.body.gender|| 'unknown'}, and activity level is ${$json.body.activityLevel || 'unknown'}.` }}\n",
+        "text": "",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        220,
+        0
+      ],
+      "id": "5d9f20ae-687c-4a12-8930-8bfde5e6fba4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        248,
+        220
+      ],
+      "id": "f804a6a0-2369-4eb1-9d9b-070bee2a7e99",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "XEc4lkKYGxB8aZj6",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        220
+      ],
+      "id": "c0e0f9a8-80c0-4d0f-b8db-7bbd149fc26e",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseKey": ""
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        580,
+        0
+      ],
+      "id": "28ad219a-34c6-4648-a4cf-46095f1fe4c9",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {
+    "AI Agent": [
+      {
+        "json": {
+          "name": "First item",
+          "code": 1
+        }
+      },
+      {
+        "json": {
+          "name": "Second item",
+          "code": 2
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0676867d-caac-46b5-96fb-83e5e409bc66",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5925b9508a99ac3b4ecb9d9cc90204a2bf898aaf5bd40824e6c062acaeeebcd1"
+  },
+  "id": "gOvMJkN54lHcTjLg",
+  "tags": []
+}
